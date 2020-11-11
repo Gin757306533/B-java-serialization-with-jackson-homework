@@ -7,6 +7,9 @@ import com.thoughtworks.capability.gtb.vo.EventVo;
 import com.thoughtworks.capability.gtb.vo.UserVo;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,24 +23,21 @@ import org.springframework.web.bind.annotation.RestController;
 public class EventController {
 
   private final ObjectMapper objectMapper;
+  private Map<String, EventVo> eventMapper;
 
   @Autowired
   public EventController(ObjectMapper objectMapper) {
     this.objectMapper = objectMapper;
+    this.eventMapper = new HashMap<>();
   }
 
   @GetMapping("/events/{id}")
-  public EventVo getEventById(@PathVariable("id") String id) {
-    UserVo user = new UserVo("3", "张三");
-    return new EventVo(id, "下载文件",
-             EventType.DOWNLOAD,new Date(),
-            user
-    );
-  }
+  public EventVo getEventById(@PathVariable("id") String id) { return eventMapper.get(id);}
 
   @PostMapping("/events")
   public void createEvent(@RequestBody EventVo event) throws JsonProcessingException {
     String json = objectMapper.writeValueAsString(event);
+    this.eventMapper.put(event.getId(), event);
     log.info("create event: {}", json);
   }
 }
